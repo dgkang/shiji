@@ -81,8 +81,10 @@ def convert(no, save):
 
 
 def replaceit(no, isMOBI):
-    filename = "/tmp/build/" + "ch" + "0"*(3-len(str(no)))+ str(no) + ".xhtml"
+    #filename = "/tmp/build/" + "ch" + "0"*(3-len(str(no)))+ str(no) + ".xhtml"
     
+    filename = "/tmp/build/" + "ch" + str(no) + ".xhtml"
+
     fin = open(filename,"r")
     content = ""
     for line in fin:
@@ -175,9 +177,11 @@ if __name__ == "__main__":
         convert(i, save)
     save.close()
 
+
     print("Generating raw epub file using pandoc...")
-    subprocess.call(["pandoc", "title.txt", "test.md", "-o", "shiji.epub"])
-    os.remove("test.md")
+    #subprocess.call(["pandoc", "title.txt", "test.md", "-o", "shiji.epub"])
+    subprocess.call(["pandoc", "--epub-cover-image=./data/cover.jpg","test.md", "-o", "shiji.epub"])
+    #os.remove("test.md")
 
     print("Extracting the epub file...")
     if not os.path.exists("/tmp/build/"):
@@ -197,12 +201,13 @@ if __name__ == "__main__":
             if os.path.exists(dest):
                 os.remove(dest)
             shutil.copyfile(src, dest)
+    os.remove("/tmp/build/cover.jpg")
     if isMOBI:
         os.remove("/tmp/build/note.png")
                 
-    print("Generating pop annotations...")
-    for i in range(1, chapters + 1):
-        replaceit(i, isMOBI)    
+#    print("Generating pop annotations...")
+#    for i in range(1, chapters + 1):
+#        replaceit(i, isMOBI)    
 
     print("Compressing and publish shiji.epub...")
     with zipfile.ZipFile("shiji.epub", "w", zipfile.ZIP_DEFLATED) as shiji:
